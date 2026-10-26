@@ -17,7 +17,7 @@ import Image from "next/image";
 export default function TechStack() {
   return (
     <section className="w-full overflow-hidden py-8">
-      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+      <div className="mx-auto ">
         <div className="mt-12 grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 xl:gap-20">
           {/* Konten pengantar */}
           <div className="max-w-xl">
