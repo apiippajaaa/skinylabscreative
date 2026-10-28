@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
 import {
   ArrowUpRight,
   Camera,
@@ -10,638 +9,259 @@ import {
   MessageCircle,
   Sparkles,
 } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import type { LucideIcon } from "lucide-react";
 
-/* =========================================================
-   CONTACT DATA
-========================================================= */
+type ContactItem = {
+  label: string;
+  value: string;
+  href: string | null;
+  icon: LucideIcon;
+  accent: string;
+  surface: string;
+};
 
-const CONTACT_ITEMS = [
+const CONTACT_ITEMS: ContactItem[] = [
   {
     label: "Email",
     value: "your@email.com",
     href: "mailto:your@email.com",
     icon: Mail,
-    accent: "#FF6B57",
+    accent: "#F16B52",
+    surface: "#FFF0E9",
   },
   {
     label: "Instagram",
     value: "@skinylabs",
-    href: "#",
+    href: null, // Tambahkan URL profil Instagram.
     icon: Camera,
-    accent: "#A78BFA",
+    accent: "#7165E8",
+    surface: "#F0EDFF",
   },
   {
     label: "Lokasi",
     value: "Klaten, Indonesia",
-    href: "#",
+    href: null,
     icon: MapPin,
-    accent: "#F4C430",
+    accent: "#B48716",
+    surface: "#FFF6D9",
   },
   {
     label: "WhatsApp",
     value: "Mari ngobrol",
-    href: "#",
+    href: null, // Tambahkan link WhatsApp yang valid.
     icon: MessageCircle,
-    accent: "#35BFA4",
+    accent: "#239B83",
+    surface: "#E4F7F0",
   },
-] as const;
+];
 
-/* =========================================================
-   CONTACT ITEM
-========================================================= */
+const EASING = [0.22, 1, 0.36, 1] as const;
 
-function ContactItem({
-  label,
-  value,
-  href,
-  icon: Icon,
-  accent,
-}: (typeof CONTACT_ITEMS)[number]) {
+function Reveal({
+  children,
+  delay = 0,
+  className,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <Link
-      href={href}
-      className="
-        group
-        relative
-        flex
-        min-w-0
-        items-center
-        gap-3
-        overflow-hidden
-        py-4
-        transition-transform
-        duration-500
-        sm:py-5
-        lg:hover:-translate-y-1
-      "
+    <motion.div
+      initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{
+        duration: reduceMotion ? 0 : 0.55,
+        delay: reduceMotion ? 0 : delay,
+        ease: EASING,
+      }}
+      className={className}
     >
-      {/* =================================================
-          HORIZONTAL HOVER LINE
-      ================================================= */}
-
-      <span
-        aria-hidden="true"
-        className="
-          absolute
-          bottom-0
-          left-0
-          h-[2px]
-          w-full
-          origin-left
-          scale-x-0
-          transition-transform
-          duration-500
-          ease-out
-          group-hover:scale-x-100
-        "
-        style={{
-          backgroundColor: accent,
-        }}
-      />
-
-      {/* =================================================
-          ICON
-          Only this element rotates
-      ================================================= */}
-
-      <span
-        className="
-          relative
-          flex
-          h-11
-          w-11
-          shrink-0
-          items-center
-          justify-center
-          rounded-[14px]
-          border-[2px]
-          border-white
-          text-white
-          shadow-[4px_5px_0_rgba(15,23,42,0.06)]
-          transition-all
-          duration-500
-          group-hover:rotate-[-5deg]
-          group-hover:scale-105
-          group-hover:-translate-y-0.5
-          sm:h-12
-          sm:w-12
-        "
-        style={{
-          backgroundColor: accent,
-        }}
-      >
-        <Icon
-          size={18}
-          strokeWidth={1.8}
-          className="
-            relative
-            z-10
-          "
-        />
-      </span>
-
-      {/* =================================================
-          TEXT
-          Stays completely straight
-      ================================================= */}
-
-      <span className="min-w-0">
-        <span
-          className="
-            block
-            text-[9px]
-            font-semibold
-            uppercase
-            tracking-[0.18em]
-            text-slate-400
-            sm:text-[10px]
-          "
-        >
-          {label}
-        </span>
-
-        <span
-          className="
-            mt-1
-            block
-            truncate
-            text-[13px]
-            font-semibold
-            tracking-[-0.02em]
-            text-slate-900
-            sm:text-[14px]
-          "
-        >
-          {value}
-        </span>
-      </span>
-
-      {/* =================================================
-          ARROW
-          Slate normally → accent background on hover
-      ================================================= */}
-
-      <span
-        className="
-          ml-auto
-          flex
-          h-8
-          w-8
-          shrink-0
-          items-center
-          justify-center
-          rounded-full
-          bg-slate-100
-          text-slate-400
-          transition-all
-          duration-500
-          ease-out
-          group-hover:text-white
-        "
-        style={{
-          ["--contact-accent" as string]: accent,
-        }}
-      >
-        <span
-          className="
-            absolute
-            h-8
-            w-8
-            scale-0
-            rounded-full
-            transition-transform
-            duration-500
-            ease-out
-            group-hover:scale-100
-          "
-          style={{
-            backgroundColor: accent,
-          }}
-        />
-
-        <ArrowUpRight
-          size={14}
-          strokeWidth={1.8}
-          className="
-            relative
-            z-10
-            block
-            shrink-0
-            transition-transform
-            duration-500
-            group-hover:-translate-y-0.5
-            group-hover:translate-x-0.5
-          "
-        />
-      </span>
-    </Link>
+      {children}
+    </motion.div>
   );
 }
 
-/* =========================================================
-   MAIN CTA
-========================================================= */
+function ContactCard({ item }: { item: ContactItem }) {
+  const Icon = item.icon;
+
+  const content = (
+    <>
+      <div className="flex items-start justify-between gap-3">
+        <span
+          className="flex h-11 w-11 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:rotate-[-6deg] group-hover:scale-105 sm:h-12 sm:w-12"
+          style={{
+            backgroundColor: item.accent,
+            color: "#FFFFFF",
+          }}
+        >
+          <Icon size={20} strokeWidth={1.8} aria-hidden="true" />
+        </span>
+
+        {item.href && (
+          <span
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/70 transition-all duration-300 group-hover:bg-white group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            style={{ color: item.accent }}
+          >
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </span>
+        )}
+      </div>
+
+      <div className="mt-7 min-w-0">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500">
+          {item.label}
+        </p>
+
+        <p className="mt-1.5 break-words text-[15px] font-semibold tracking-[-0.035em] text-neutral-950 sm:text-base">
+          {item.value}
+        </p>
+      </div>
+
+      <span
+        aria-hidden="true"
+        className="mt-5 h-[3px] w-7 rounded-full transition-[width] duration-300 group-hover:w-12"
+        style={{ backgroundColor: item.accent }}
+      />
+    </>
+  );
+
+  const className =
+    "group flex min-h-[160px] flex-col rounded-[22px] border border-black/[0.04] p-4 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_12px_32px_-18px_rgba(0,0,0,0.18)] sm:min-h-[180px] sm:rounded-[26px] sm:p-5";
+
+  if (item.href) {
+    return (
+      <Link
+        href={item.href}
+        className={className}
+        style={{ backgroundColor: item.surface }}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <div className={className} style={{ backgroundColor: item.surface }}>
+      {content}
+    </div>
+  );
+}
+
+function ContactGrid() {
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      {CONTACT_ITEMS.map((item) => (
+        <ContactCard key={item.label} item={item} />
+      ))}
+    </div>
+  );
+}
+
+function MainCTA() {
+  return (
+    <div className="relative overflow-hidden rounded-[26px] bg-neutral-950 p-6 text-white sm:rounded-[32px] sm:p-8 lg:p-10">
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-8 -top-12 h-36 w-36 rounded-full border-[24px] border-white/[0.06] sm:h-48 sm:w-48"
+      />
+
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-10 right-24 h-24 w-24 rounded-full bg-[#F16B52]/15 blur-2xl"
+      />
+
+      <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="max-w-xl">
+          <div className="mb-4 flex items-center gap-2">
+            <Sparkles size={15} className="text-[#F9D66B]" aria-hidden="true" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+              Your next big idea
+            </span>
+          </div>
+
+          <h3 className="text-3xl font-semibold leading-[1.05] tracking-[-0.065em] sm:text-4xl lg:text-5xl">
+            Punya ide?
+            <br />
+            <span className="text-[#F9D66B]">Yuk, bikin nyata.</span>
+          </h3>
+
+          <p className="mt-4 max-w-md text-sm leading-6 text-neutral-400">
+            Nggak harus semuanya sudah terencana. Ceritakan idemu, kita mulai
+            dari sana.
+          </p>
+        </div>
+
+        <Link
+          href="mailto:your@email.com"
+          className="group inline-flex w-fit shrink-0 items-center gap-3 rounded-full bg-[#F9D66B] py-3 pl-5 pr-3 text-sm font-semibold text-neutral-950 transition-colors duration-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F9D66B] focus-visible:ring-offset-4 focus-visible:ring-offset-neutral-950"
+        >
+          Mulai ngobrol
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-950 text-white transition-transform duration-300 group-hover:rotate-45">
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </span>
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 export default function CTASection() {
-  const shouldReduceMotion = useReducedMotion();
-
-  const animationProps = {
-    initial: shouldReduceMotion
-      ? undefined
-      : {
-          opacity: 0,
-          y: 16,
-        },
-
-    whileInView: shouldReduceMotion
-      ? undefined
-      : {
-          opacity: 1,
-          y: 0,
-        },
-
-    viewport: {
-      once: true,
-      amount: 0.2,
-    },
-  };
-
   return (
     <section
       id="contact"
       aria-labelledby="contact-heading"
-      className="
-        relative
-        isolate
-        flex
-        min-h-0
-        w-full
-        items-center
-        overflow-hidden
-        py-12
-        sm:py-14
-        md:py-16
-        lg:min-h-[calc(100vh-5rem)]
-        lg:py-12
-      "
+      className="w-full py-12 sm:py-16 lg:py-20"
     >
-      {/* =================================================
-          BACKGROUND
-      ================================================= */}
-
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          -z-10
-          overflow-hidden
-        "
-      >
-        {/* Main soft glow */}
-
-        <div
-          className="
-            absolute
-            left-1/2
-            top-[38%]
-            h-[260px]
-            w-[260px]
-            -translate-x-1/2
-            rounded-full
-            bg-[#EAF2FF]
-            opacity-60
-            blur-3xl
-            sm:h-[340px]
-            sm:w-[340px]
-            md:h-[420px]
-            md:w-[420px]
-          "
-        />
-
-        {/* Peach */}
-
-        <div
-          className="
-            absolute
-            -right-24
-            -top-24
-            h-60
-            w-60
-            rounded-full
-            bg-[#FFF0ED]
-            opacity-60
-            blur-3xl
-            sm:h-72
-            sm:w-72
-          "
-        />
-
-        {/* Green */}
-
-        <div
-          className="
-            absolute
-            -bottom-24
-            -left-24
-            h-60
-            w-60
-            rounded-full
-            bg-[#E9FAF6]
-            opacity-60
-            blur-3xl
-            sm:h-72
-            sm:w-72
-          "
-        />
-      </div>
-
-      {/* =================================================
-          CONTENT
-      ================================================= */}
-
-      <div
-        className="
-          relative
-          mx-auto
-          w-full
-          max-w-7xl
-          px-5
-          sm:px-6
-          lg:px-8
-        "
-      >
-        {/* =================================================
-            EYEBROW
-        ================================================= */}
-
-        <motion.div
-          {...animationProps}
-          transition={{
-            duration: 0.5,
-            ease: "easeOut",
-          }}
-          className="flex items-center gap-3"
-        >
-          <span
-            className="
-              h-1.5
-              w-7
-              rounded-full
-              bg-[#FF6B57]
-            "
-          />
-
-          <p
-            className="
-              text-[9px]
-              font-semibold
-              uppercase
-              tracking-[0.2em]
-              text-slate-500
-              sm:text-[10px]
-            "
-          >
-            Mari membuat sesuatu
-          </p>
-        </motion.div>
-
-        {/* =================================================
-            HEADING
-        ================================================= */}
-
-        <motion.div
-          {...animationProps}
-          transition={{
-            duration: 0.65,
-            delay: 0.04,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="mt-5 sm:mt-6"
-        >
-          <h2
-            id="contact-heading"
-            className="
-              max-w-4xl
-              text-[clamp(2.7rem,6.2vw,5.2rem)]
-              font-semibold
-              leading-tight
-              tracking-[-0.065em]
-              text-slate-950
-            "
-          >
-            Punya ide?
-            <br />
-            <span className="text-slate-400">Mari wujudkan bersama.</span>
-          </h2>
-        </motion.div>
-
-        <motion.div
-          {...animationProps}
-          transition={{
-            duration: 0.55,
-            delay: 0.12,
-            ease: "easeOut",
-          }}
-          className="mt-6 flex flex-col gap-4 sm:mt-7 md:flex-row md:items-end md:justify-between md:gap-10"
-        >
-          <p className="max-w-lg text-[11px] leading-6 text-slate-400 sm:text-[12px] md:text-[13px]">
-            Ceritakan apa yang sedang kamu pikirkan. Website, desain, video,
-            produk digital, atau sesuatu yang belum punya bentuk — kita bisa
-            mulai dari sana.
-          </p>
-
-          <div className="flex shrink-0 items-center gap-3">
-            <span className="h-px w-7 bg-slate-300" />
-
-            <span className="text-[8px] font-medium uppercase tracking-[0.16em] text-slate-300 sm:text-[9px]">
-              Ide · Desain · Eksekusi
-            </span>
-          </div>
-        </motion.div>
-
-        {/* =================================================
-            CONTACT
-        ================================================= */}
-
-        <motion.div
-          {...animationProps}
-          transition={{
-            duration: 0.65,
-            delay: 0.2,
-            ease: "easeOut",
-          }}
-          className="
-            relative
-            mt-8
-            border-y
-            border-slate-200
-            sm:mt-9
-          "
-        >
-          <div
-            className="
-              grid
-              grid-cols-1
-              divide-y
-              divide-slate-200
-              sm:grid-cols-2
-              sm:divide-x
-              sm:divide-y-0
-              lg:grid-cols-4
-            "
-          >
-            {CONTACT_ITEMS.map((item) => (
-              <div
-                key={item.label}
-                className="
-                  min-w-0
-                  sm:px-5
-                  lg:px-6
-                  first:sm:pl-0
-                  last:sm:pr-0
-                "
-              >
-                <ContactItem {...item} />
+      <div className="mx-auto w-full max-w-7xl">
+        <Reveal>
+          <div className="mb-8 flex flex-col gap-5 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-2xl">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-neutral-200 px-3 py-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#F16B52]" />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-600">
+                  Say hello
+                </span>
               </div>
-            ))}
+
+              <h2
+                id="contact-heading"
+                className="text-4xl font-semibold leading-[1.05] tracking-[-0.07em] text-neutral-950 sm:text-5xl lg:text-6xl"
+              >
+                Let's make
+                <br className="sm:hidden" /> something{" "}
+                <span className="text-[#F16B52]">great.</span>
+              </h2>
+            </div>
+
+            <p className="max-w-sm text-sm leading-7 text-neutral-500 sm:text-[15px]">
+              Ada proyek, ide, atau sekadar ingin berdiskusi? Kami terbuka untuk
+              memulai percakapan baru.
+            </p>
           </div>
-        </motion.div>
+        </Reveal>
 
-        {/* =================================================
-            FINAL CTA
-        ================================================= */}
+        <Reveal delay={0.08}>
+          <ContactGrid />
+        </Reveal>
 
-        <motion.div
-          {...animationProps}
-          transition={{
-            duration: 0.6,
-            delay: 0.28,
-            ease: "easeOut",
-          }}
-          className="
-            mt-7
-            flex
-            flex-col
-            gap-4
-            sm:mt-8
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-          "
-        >
-          <div className="flex items-center gap-2.5">
-            <Sparkles size={14} strokeWidth={1.7} className="text-[#F4C430]" />
+        <Reveal delay={0.16} className="mt-5 sm:mt-6">
+          <MainCTA />
+        </Reveal>
 
-            <span
-              className="
-                text-[10px]
-                text-slate-400
-                sm:text-[11px]
-              "
-            >
-              Hal baik biasanya dimulai dari sebuah percakapan.
-            </span>
-          </div>
-
-          <Link
-            href="mailto:your@email.com"
-            className="
-              group
-              inline-flex
-              w-fit
-              items-center
-              gap-2.5
-              text-[13px]
-              font-semibold
-              tracking-[-0.02em]
-              text-slate-950
-              sm:text-[14px]
-            "
-          >
-            <span
-              className="
-                border-b
-                border-slate-950
-                pb-0.5
-                transition-colors
-                duration-300
-                group-hover:border-[#FF6B57]
-              "
-            >
-              Mulai percakapan
-            </span>
-
-            <span
-              className="
-                flex
-                h-8
-                w-8
-                items-center
-                justify-center
-                rounded-full
-                bg-slate-950
-                text-white
-                transition-all
-                duration-500
-                group-hover:rotate-45
-                group-hover:bg-[#FF6B57]
-              "
-            >
-              <ArrowUpRight size={14} strokeWidth={1.8} />
-            </span>
-          </Link>
-        </motion.div>
-
-        {/* =================================================
-            SIGNATURE
-        ================================================= */}
-
-        <motion.div
-          {...animationProps}
-          transition={{
-            duration: 0.5,
-            delay: 0.35,
-            ease: "easeOut",
-          }}
-          className="
-            mt-7
-            flex
-            flex-col
-            gap-2
-            border-t
-            border-slate-100
-            pt-4
-            sm:mt-8
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-          "
-        >
-          <span
-            className="
-              text-[8px]
-              font-medium
-              uppercase
-              tracking-[0.18em]
-              text-slate-300
-            "
-          >
+        <div className="mt-6 flex flex-col gap-2 border-t border-neutral-200/80 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
             Skinylabs Creative
           </span>
 
-          <span
-            className="
-              text-[8px]
-              uppercase
-              tracking-[0.14em]
-              text-slate-300
-            "
-          >
-            Dibuat dengan rasa ingin tahu
+          <span className="text-xs text-neutral-400">
+            Made with curiosity, built with purpose.
           </span>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
